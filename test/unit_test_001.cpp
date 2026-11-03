@@ -61,8 +61,8 @@ unittest(test_constructor)
   assertEqual(SLF3S_OK, slf.getLastError());
 
   //  no data so all zero.
-  assertEqualFloat(0.0f, slf.getFlow());
-  assertEqualFloat(0.0f, slf.getTemperature());
+  assertEqualFloat(0.0f, slf.getFlow(), 0.01f);
+  assertEqualFloat(0.0f, slf.getTemperature(), 0.01f);
   assertEqual(0, slf.getSignalFlags());
 }
 
