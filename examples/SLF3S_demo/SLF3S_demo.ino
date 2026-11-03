@@ -26,7 +26,7 @@ void setup()
   //  SLF3S-0600F
   if (slf.begin(600) == false)
   {
-    Serial.print("Error: ")
+    Serial.print("Error: ");
     Serial.println(slf.getLastError());
     while(1);
   }
@@ -64,7 +64,7 @@ void loop()
   else
   {
     Serial.print(millis());
-    Serial.print("\tError: ")
+    Serial.print("\tError: ");
     Serial.println(slf.getLastError());
   }
   delay(1000);
