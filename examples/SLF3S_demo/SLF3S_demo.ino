@@ -23,25 +23,51 @@ void setup()
 
   Wire.begin();
 
-  slf.begin(600);  //  SLF3S-0600F
+  //  SLF3S-0600F
+  if (slf.begin(600) == false)
+  {
+    Serial.print("Error: ")
+    Serial.println(slf.getLastError());
+    while(1);
+  }
+
   slf.requestH2O();
 
-  while (!slf.isReady()); //  wait for stable up to 60 ms.
+  //  wait for stable up to 60 ms
+  //  or timeout...
+  uint32_t start = millis();
+  while (slf.isReady() == false)
+  {
+    if (millis() - start > 1000)
+    {
+      Serial.print("Error: ");
+      Serial.println(slf.getLastError());
+      break;
+    }
+  }
 }
 
 
 void loop()
 {
   slf.readFlowTemp();
-  float flow = slf.getFlow();
-  float temp = slf.getTemperature();
-  Serial.print(millis());
-  Serial.print("\t");
-  Serial.print(flow);
-  Serial.print("\t");
-  Serial.println(temp);
-  Serial.println();
-  delay(2000);
+  if (slf.getLastError() == SLF3S_OK)
+  {
+    float flow = slf.getFlow();
+    float temp = slf.getTemperature();
+    Serial.print(millis());
+    Serial.print("\t");
+    Serial.print(flow);
+    Serial.print("\t");
+    Serial.println(temp);
+  }
+  else
+  {
+    Serial.print(millis());
+    Serial.print("\tError: ")
+    Serial.println(slf.getLastError());
+  }
+  delay(1000);
 }
 
 

@@ -32,11 +32,14 @@ Details see page3, table 1:
 
 |  Feature           | SLF3S-0600F | SLF3S-1300F | SLF3C-1300F | notes |
 |:-------------------|:-----------:|:-----------:|:-----------:|:------|
-|  Voltage           |   **3.3**   |   **3.3**   |   **3.3**   |
+|  Voltage           |  **3.3 V**  |  **3.3 V**  |  **3.3 V**  |
 |  Low flow sensing  | 2000 μl/min |  40 ml/min  |  40 ml/min  |
 |  Accuracy (H2O)    |     ±5%     |      ±5%    |     ±5%     |
 |  Accuracy (IPA)    |    ±10%     |     ±10%    |    ±10%     |
 |  Read product ID   |  0x07030302 |  0x07030402 |  0x07030202 |
+
+
+To elaborate
 
 
 - 25 ms power up time
@@ -49,7 +52,7 @@ Datasheets used (see documents folder):
 - SLF3C-1300F - Version 1.1 – D1 – October 2022
 
 Note the SLF3S sensors are high precision instruments and therefore relative
-expensive, few hundred EUR / USD.
+expensive, few hundred EUR / USD. So use them with care (and 3.3V only).
 
 Feedback as always is welcome.
 
@@ -72,10 +75,10 @@ from left to right, see datasheet page 6
 |  pin  |   name   |  description    |  Notes  |
 |:-----:|:--------:|:----------------|:-------:|
 |   1   |  IRQn    |  interrupt      |  See datasheet SLF3C-1300F page 9
-|   2   |  SDA     |  I2C data       |  3.3V !
-|   3   |  VDD     |  Power +3.3V    |
+|   2   |  SDA     |  I2C data       |  3.3 Volt
+|   3   |  VDD     |  Power +3.3 V   |
 |   4   |  GND     |  Ground         |
-|   5   |  SCL     |  I2C clock      |  3.3V !
+|   5   |  SCL     |  I2C clock      |  3.3 Volt
 |   6   |   -      |  not connected  | connect to GND
 
 The IRQn pin can also be used to change the I2C address of the sensor.
@@ -85,7 +88,7 @@ procedure is available in the documents folder.
 
 ### Related
 
-Datasheets / product page
+Product page - data sheets and more.
 
 - https://sensirion.com/products/catalog/SLF3S-0600F
 - https://sensirion.com/products/catalog/SLF3S-1300F
@@ -103,7 +106,7 @@ Other
 
 ### Tested
 
-TODO: Test on ESP32 or other 3.3V MCU.
+TODO: Test with 3.3V MCU e.g. ESP32.
 
 
 ## I2C
@@ -174,7 +177,7 @@ Note: The API can be subject to change.
 
 ### Constructor
 
-- **SLF3S(uint8_t address = 0x08, TwoWire \*wire = &Wire)** optional select I2C bus.
+- **SLF3S(uint8_t address = 0x08, TwoWire \*wire = &Wire)** set address and select I2C bus. See I2C section below about address.
 - **bool begin(uint16_t type = 600)** checks if device address is visible on the I2C bus.
 Sets the type to 600 or 1300, all others are mapped upon 600.
 - **bool isConnected()** Checks if device address can be found on I2C bus.
@@ -243,7 +246,7 @@ Note the product ID's only differ one byte.
 
 Note: the return value of **readSerialNR()** is an uint64_t.
 The Arduino framework cannot print this by default, so one need
-either to split in two 32 bit ints or use e.g. **hex()** from
+either to split in two 32 bit integers or use e.g. **hex()** from
 the printHelpers library. See example.
 
 
@@ -255,12 +258,13 @@ the printHelpers library. See example.
 
 Error table
 
-|  value   |  description         |
-|:--------:|:---------------------|
+|  value   |  description         |  notes  |
+|:--------:|:---------------------|:--------|
 |   0x00   |  SLF3S_OK            |
-|   0x01   |  SLF3S_CRC_ERROR     |
-|   0x10   |  SLF3S_NOT_READY     |
-|  other   |  e.g. low level I2C  |
+|   0x01   |  SLF3S_CRC_ERROR     |  data might be corrupted
+|   0x10   |  SLF3S_NOT_READY     |  device is in warming up
+|   0x11   |  SLF3S_NO_REQUEST    |  no request started
+|  other   |  e.g. low level I2C  |  see Wire documentation.
 
 
 ## Future

@@ -23,8 +23,9 @@ uint16_t SLF3C_READ_THERMAL = 0x3646;
 //
 //  CONSTRUCTOR
 //
-SLF3S::SLF3S(TwoWire *wire)
+SLF3S::SLF3S(uint8_t address, TwoWire *wire)
 {
+  _address = address;
   _wire = wire;
   _error = SLF3S_OK;
   _lastRead = 0;
@@ -54,7 +55,8 @@ bool SLF3S::begin(uint16_t type)
 bool SLF3S::isConnected()
 {
   _wire->beginTransmission(_address);
-  return (_wire->endTransmission() == 0);
+  _error = _wire->endTransmission();
+  return (_error == SLF3S_OK);
 }
 
 uint8_t SLF3S::getAddress()

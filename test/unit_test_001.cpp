@@ -40,10 +40,10 @@ unittest_teardown()
 
 unittest(test_constants)
 {
-  assertEqual(0x00, SLF3S_OK           );
-  assertEqual(0x01, SLF3S_CRC_ERROR    );
-  assertEqual(0x10, SLF3S_NOT_READY    );
-  assertEqual(0x11, SLF3S_REQUEST_ERROR);
+  assertEqual(0x00, SLF3S_OK        );
+  assertEqual(0x01, SLF3S_CRC_ERROR );
+  assertEqual(0x10, SLF3S_NOT_READY );
+  assertEqual(0x11, SLF3S_NO_REQUEST);
 }
 
 

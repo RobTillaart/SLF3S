@@ -24,10 +24,17 @@ void setup()
   Serial.println(SLF3S_LIB_VERSION);
   Serial.println();
 
-  Wire.begin(); 
+  Wire.begin();
 
-  slf.begin(600);  //  SLF3S-0600F
+  //  SLF3S-0600F
+  if (slf.begin(600) == false)
+  {
+    Serial.print("Error: ")
+    Serial.println(slf.getLastError());
+    while(1);
+  }
 
+  //  might check getLastError too
   uint32_t productID = slf.readProductID();
   uint64_t serialNR = slf.readSerialNR();
   Serial.print("ProductID:\t0x");

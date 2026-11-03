@@ -7,7 +7,7 @@
 // PURPOSE: Arduino library for the Sensirion I2C Low Flow sensor SLF3S
 //     URL: https://github.com/RobTillaart/SLF3S
 //
-//  WORK IN PROGRESS
+//  WORK IN PROGRESS, use with care.
 
 
 #include "Arduino.h"
@@ -28,7 +28,7 @@ const uint8_t SLF3S_NO_REQUEST = 0x11;
 class SLF3S
 {
 public:
-  SLF3S(TwoWire *wire = &Wire);
+  SLF3S(uint8_t address = 0x08, TwoWire *wire = &Wire);
 
   bool     begin(uint16_t type = 600);
   bool     isConnected();
@@ -63,6 +63,7 @@ public:
   //  uncomment if needed.
   //  uint16_t getRawFlow() { return _rawFlow; };
   //  uint16_t getRawTemp() { return _rawTemp; };
+  //  void setFlowScale(float fs) { _flowScale = fs; };
   //  float getFlowScale() { return _flowScale; };
   //  float getTempScale() { return _tempScale; };
 
