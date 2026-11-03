@@ -51,7 +51,19 @@ unittest(test_constructor)
 {
   SLF3S slf;
 
-  assertEqual(0x08, slf.getAddress())
+  assertEqual(0x08, slf.getAddress());
+  assertEqual(SLF3S_OK, slf.getLastError());
+
+  //  default false, as there is no request.
+  assertFalse(slf.isRead());
+  assertEqual(SLF3S_NO_REQUEST, slf.getLastError());
+  //  error should reset
+  assertEqual(SLF3S_OK, slf.getLastError());
+
+  //  no data so all zero.
+  assertEqualFloat(0.0f, slf.getFlow());
+  assertEqualFloat(0.0f, slf.getTemperature());
+  assertEqual(0, slf.getSignalFlags());
 }
 
 
