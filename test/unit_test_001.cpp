@@ -55,7 +55,7 @@ unittest(test_constructor)
   assertEqual(SLF3S_OK, slf.getLastError());
 
   //  default false, as there is no request.
-  assertFalse(slf.isRead());
+  assertFalse(slf.isReady());
   assertEqual(SLF3S_NO_REQUEST, slf.getLastError());
   //  error should reset
   assertEqual(SLF3S_OK, slf.getLastError());
