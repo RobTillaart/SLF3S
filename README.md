@@ -31,7 +31,7 @@ SLF3C class will be written.
 Details see page3, table 1:
 
 |  Feature           | SLF3S-0600F | SLF3S-1300F | SLF3C-1300F | notes |
-|:-------------------|:-----------:|::----------:|------------:|:------|
+|:-------------------|:-----------:|:-----------:|:-----------:|:------|
 |  Voltage           |   **3.3**   |   **3.3**   |   **3.3**   |
 |  Low flow sensing  | 2000 μl/min |  40 ml/min  |  40 ml/min  |
 |  Accuracy (H2O)    |     ±5%     |      ±5%    |     ±5%     |
@@ -43,7 +43,7 @@ Details see page3, table 1:
 - 60 ms stabilize output
 - Recommended sensor read out frequency 10 - 2000 Hz (page 5 + section 3.1).
 
-Datasheets used:
+Datasheets used (see documents folder):
 - SLF3S-0600F - Version 1.2 – D1 – October 2023
 - SLF3S-1300F - Version 1.1 – D1 – October 2022
 - SLF3C-1300F - Version 1.1 – D1 – October 2022
@@ -71,12 +71,16 @@ from left to right, see datasheet page 6
 
 |  pin  |   name   |  description    |  Notes  |
 |:-----:|:--------:|:----------------|:-------:|
-|   1   |  IRQn    |                 |
-|   2   |  SDA     |  I2C data       |  3.3V
+|   1   |  IRQn    |  interrupt      |  See datasheet SLF3C-1300F page 9
+|   2   |  SDA     |  I2C data       |  3.3V !
 |   3   |  VDD     |  Power +3.3V    |
 |   4   |  GND     |  Ground         |
-|   5   |  SCL     |  I2C clock      |
+|   5   |  SCL     |  I2C clock      |  3.3V !
 |   6   |   -      |  not connected  | connect to GND
+
+The IRQn pin can also be used to change the I2C address of the sensor.
+The library does not support this, however a document describing the
+procedure is available in the documents folder.
 
 
 ### Related
@@ -106,10 +110,13 @@ TODO: Test on ESP32 or other 3.3V MCU.
 
 ### I2C Address
 
-The device has a fixed I2C address of 0x08 (8) so only one sensor per I2C bus can be used.
-The I2C communication supports 3.3V so any 3.3V MCU should be able to connect.
+The device default has a fixed I2C address of 0x08 (8) so only one sensor per I2C bus
+can be used. It is however possible to change the I2C address by using the IRQ pin.
+See the documentation folder for details. This is not supported in the library.
+
+The I2C communication supports **3.3V only** so any 3.3V MCU should be able to connect.
 Do not use 5V MCU to connect without a voltage converter.
-Do not forget appropriate pull up resistors on the I2C SDA and SCL lines.
+Do not forget appropriate **pull up** resistors on the I2C SDA and SCL lines.
 
 If one needs more sensors there are some options.
 - One could use an I2C multiplexer (see below)
@@ -151,10 +158,10 @@ a dry run with no sensor (UNO R3)
 |   300 kHz  |     80      |       88       |
 |   400 kHz  |     72      |       84       |
 |   600 kHz  |     64      |       80       |
-|   800 kHz  |      -      |        -       |
-|  1000 kHz  |      -      |        -       |
+|   800 kHz  |      -      |        -       |  failed in dry run
+|  1000 kHz  |      -      |        -       |  failed in dry run
 
-Note the gain above 400 kHz is not that much.
+Note the gain above 400 kHz is not much.
 
 
 ## Interface
@@ -167,8 +174,8 @@ Note: The API can be subject to change.
 
 ### Constructor
 
-- **SLF3S(TwoWire \*wire = &Wire)** optional select I2C bus.
-- **bool begin(uint16_t type = 600)** checks if device address 0x08 is visible on the I2C bus.
+- **SLF3S(uint8_t address = 0x08, TwoWire \*wire = &Wire)** optional select I2C bus.
+- **bool begin(uint16_t type = 600)** checks if device address is visible on the I2C bus.
 Sets the type to 600 or 1300, all others are mapped upon 600.
 - **bool isConnected()** Checks if device address can be found on I2C bus.
 - **uint8_t getAddress()** Returns the device address, default 0x08 (8).
@@ -209,7 +216,6 @@ steps table, details see page 14.
 |   temp step   |      0.005°C  |      0.005°C  |
 
 
-
 flags table, details see page 11.
 
 |  bit  |  meaning           |  notes  |
@@ -230,7 +236,7 @@ e.g. log files.
 - **uint64_t readSerialNR()** returns 64 bit unique serial number.
 
 |  Feature           | SLF3S-0600F | SLF3S-1300F | SLF3C-1300F |
-|:-------------------|:-----------:|::----------:|------------:|
+|:-------------------|:-----------:|:-----------:|:-----------:|
 |  Read product ID   |  0x07030302 |  0x07030402 |  0x07030202 |
 
 Note the product ID's only differ one byte.
@@ -274,7 +280,7 @@ Error table
   - add **setFlowScale(float ratio)** a flow conversion constant
   - calibrate other liquids than water / IPA. use at own risk
 - implement SLF3C library.
-  - derived / stand alone?
+  - derived / stand alone / add to this library?
 - check if stopMeasurement() saves energy?
   - mandatory 60 ms to get stable again?
 
@@ -282,6 +288,8 @@ Error table
 
 - add **readFlowNoCRC()** to skip CRC (max performance)
 - add examples
+- add sketch to change I2C address
+  - need hardware to test
 - add unit tests (if possible)
 
 
