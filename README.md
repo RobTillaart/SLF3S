@@ -24,14 +24,14 @@ As the library is not tested with hardware yet, it is **Work In Progress**, so u
 
 Be sure to read the datasheet to understand the sensor.
 
-The library will also work for the **SLF3C_1300F** however it does
-not handle its thermal conductivity command. If time permits a separate
-SLF3C class will be written.
+The library will also work for the **SLF3C_1300F** and others however 
+the library does not handle SLF3C's thermal conductivity command. 
+If time permits a separate SLF3C class will be written.
 
 Details see page3, table 1:
 
 |  device     |  voltage  |  full scale  |  acc. H20  |  acc. IPA  |
-|:------------|:---------:|:------------:|:----------:|:----------:|
+|:------------|:---------:|-------------:|:----------:|:----------:|
 | SLF3S-0600F | **3.3 V** |    2 ml/min  |     ±5%    |    ±10%    |
 | SLF3S-1300F | **3.3 V** |   40 ml/min  |     ±5%    |    ±10%    |
 | SLF3C-1300F | **3.3 V** |   40 ml/min  |     ±5%    |    ±10%    |
