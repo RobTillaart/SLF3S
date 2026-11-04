@@ -30,12 +30,14 @@ SLF3C class will be written.
 
 Details see page3, table 1:
 
-|  Feature           | SLF3S-0600F | SLF3S-1300F | SLF3C-1300F | SLF3S-4000B | notes |
-|:-------------------|:-----------:|:-----------:|:-----------:|:-----------:|:------|
-|  Voltage           |  **3.3 V**  |  **3.3 V**  |  **3.3 V**  |  **3.3 V**  |
-|  Full scale flow   |    2 ml/min |  40 ml/min  |  40 ml/min  | 600 ml/min  |
-|  Accuracy (H2O)    |     ±5%     |      ±5%    |     ±5%     |     ±5%     |
-|  Accuracy (IPA)    |    ±10%     |     ±10%    |    ±10%     |    ±10%     |
+|  device     |  voltage  |  full scale  |  acc. H20  |  acc. IPA  |
+|:------------|:---------:|:------------:|:----------:|:----------:|
+| SLF3S-0600F | **3.3 V** |    2 ml/min  |     ±5%    |    ±10%    |
+| SLF3S-1300F | **3.3 V** |   40 ml/min  |     ±5%    |    ±10%    |
+| SLF3C-1300F | **3.3 V** |   40 ml/min  |     ±5%    |    ±10%    |
+| SLF3S-0600D | **3.3 V** |    2 ml/min  |     ±5%    |    ±10%    |
+| SLF3S-1300D | **3.3 V** |   40 ml/min  |     ±5%    |    ±10%    |
+| SLF3S-4000B | **3.3 V** |  600 ml/min  |     ±5%    |    ±10%    |
 
 
 To elaborate
@@ -256,7 +258,7 @@ steps table, details see page 14.
 
 
 To check for certain events that might affect the measurement,
-on can check the signal flags. 
+on can check the signal flags.
 Use **readFlowTempSignal()** to read the signal flags as they
 cannot be read independently.
 
@@ -324,7 +326,7 @@ Error table
 
 **Use with care, read datasheets**.
 
-These functions allow to override the conversion scales defined by the datasheets. 
+These functions allow to override the conversion scales defined by the datasheets.
 They can also be used to calibrate for other liquids.
 
 - **void setFlowScale(float fs)**

@@ -28,8 +28,8 @@ const uint8_t SLF3S_NO_REQUEST = 0x11;
 class SLF3S
 {
 public:
+  //  CONSTRUCTOR
   SLF3S(uint8_t address = 0x08, TwoWire *wire = &Wire);
-
   //  type = 600, 1300 or 4000 Other values => 600
   bool     begin(uint16_t type = 600);
   bool     isConnected();
