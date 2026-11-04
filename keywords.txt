@@ -26,6 +26,14 @@ readSerialNR	KEYWORD2
 genericReset	KEYWORD2
 getLastError	KEYWORD2
 
+setFlowScale	KEYWORD2
+getFlowScale	KEYWORD2
+setTempScale	KEYWORD2
+getTempScale	KEYWORD2
+
+getRawFlow	KEYWORD2
+getRawTemp	KEYWORD2
+
 
 # Constants (LITERAL1)
 SLF3S_LIB_VERSION	LITERAL1

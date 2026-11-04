@@ -3,7 +3,7 @@
 //    FILE: SLF3S.h
 //  AUTHOR: Rob Tillaart
 //    DATE: 2026-11-02
-// VERSION: 0.1.0
+// VERSION: 0.1.1
 // PURPOSE: Arduino library for the Sensirion I2C Low Flow sensor SLF3S
 //     URL: https://github.com/RobTillaart/SLF3S
 //
@@ -14,7 +14,7 @@
 #include "Wire.h"
 
 
-#define SLF3S_LIB_VERSION         (F("0.1.0"))
+#define SLF3S_LIB_VERSION         (F("0.1.1"))
 
 
 //  ERROR CODES
@@ -30,6 +30,7 @@ class SLF3S
 public:
   SLF3S(uint8_t address = 0x08, TwoWire *wire = &Wire);
 
+  //  type = 600, 1300 or 4000 Other values => 600
   bool     begin(uint16_t type = 600);
   bool     isConnected();
   uint8_t  getAddress();
@@ -45,6 +46,7 @@ public:
   int      readFlow();
   int      readFlowTemp();
   int      readFlowTempSignal();
+  //  get the last read value
   float    getFlow();
   float    getTemperature();
   uint16_t getSignalFlags();
@@ -59,13 +61,17 @@ public:
   int      genericReset();
   int      getLastError();
 
+
+  //  CALIBRATING (use with care)
+  void     setFlowScale(float fs) { _flowScale = fs; };
+  float    getFlowScale()         { return _flowScale; };
+  void     setTempScale(float ts) { _tempScale = ts; };
+  float    getTempScale()         { return _tempScale; };
+
+
   //  DEBUG
-  //  uncomment if needed.
-  //  uint16_t getRawFlow() { return _rawFlow; };
-  //  uint16_t getRawTemp() { return _rawTemp; };
-  //  void setFlowScale(float fs) { _flowScale = fs; };
-  //  float getFlowScale() { return _flowScale; };
-  //  float getTempScale() { return _tempScale; };
+  int16_t  getRawFlow() { return _rawFlow; };
+  int16_t  getRawTemp() { return _rawTemp; };
 
 
 protected:
@@ -76,8 +82,8 @@ protected:
   int      _read(uint8_t * arr, uint8_t size);
   uint8_t  _crc8(uint8_t * arr, uint8_t size);
 
-  uint16_t _rawFlow = 0;
-  uint16_t _rawTemp = 0;
+  int16_t  _rawFlow = 0;
+  int16_t  _rawTemp = 0;
   uint16_t _rawSignal = 0;
 
   float    _flowScale = 1.0f / 10.0f;
