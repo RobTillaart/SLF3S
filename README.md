@@ -24,19 +24,20 @@ As the library is not tested with hardware yet, it is **Work In Progress**, so u
 
 Be sure to read the datasheet to understand the sensor.
 
-The library will also work for the **SLF3C_1300F** however it does
-not handle its thermal conductivity command. If time permits a separate
-SLF3C class will be written.
+The library will also work for the **SLF3C_1300F** and others however 
+the library does not handle SLF3C's thermal conductivity command. 
+If time permits a separate SLF3C class will be written.
 
 Details see page3, table 1:
 
-|  Feature           | SLF3S-0600F | SLF3S-1300F | SLF3C-1300F | notes |
-|:-------------------|:-----------:|:-----------:|:-----------:|:------|
-|  Voltage           |  **3.3 V**  |  **3.3 V**  |  **3.3 V**  |
-|  Low flow sensing  | 2000 μl/min |  40 ml/min  |  40 ml/min  |
-|  Accuracy (H2O)    |     ±5%     |      ±5%    |     ±5%     |
-|  Accuracy (IPA)    |    ±10%     |     ±10%    |    ±10%     |
-|  Read product ID   |  0x07030302 |  0x07030402 |  0x07030202 |
+|  device     |  voltage  |  full scale  |  acc. H20  |  acc. IPA  |
+|:------------|:---------:|-------------:|:----------:|:----------:|
+| SLF3S-0600F | **3.3 V** |    2 ml/min  |     ±5%    |    ±10%    |
+| SLF3S-1300F | **3.3 V** |   40 ml/min  |     ±5%    |    ±10%    |
+| SLF3C-1300F | **3.3 V** |   40 ml/min  |     ±5%    |    ±10%    |
+| SLF3S-0600D | **3.3 V** |    2 ml/min  |     ±5%    |    ±10%    |
+| SLF3S-1300D | **3.3 V** |   40 ml/min  |     ±5%    |    ±10%    |
+| SLF3S-4000B | **3.3 V** |  600 ml/min  |     ±5%    |    ±10%    |
 
 
 To elaborate
@@ -46,15 +47,21 @@ To elaborate
 - 60 ms stabilize output
 - Recommended sensor read out frequency 10 - 2000 Hz (page 5 + section 3.1).
 
-Datasheets used (see documents folder):
-- SLF3S-0600F - Version 1.2 – D1 – October 2023
-- SLF3S-1300F - Version 1.1 – D1 – October 2022
-- SLF3C-1300F - Version 1.1 – D1 – October 2022
-
 Note the SLF3S sensors are high precision instruments and therefore relative
 expensive, few hundred EUR / USD. So use them with care (and 3.3V only).
 
 Feedback as always is welcome.
+
+
+### Datasheets
+
+Datasheets used, for latest see Sensirion website:
+
+- SLF3S-0600F - Version 1.2 – D1 – October 2023
+- SLF3S-1300F - Version 1.1 – D1 – October 2022
+- SLF3C-1300F - Version 1.1 – D1 – October 2022
+- SLF3S-xxxxD - Version 1.0 – June 2026
+- SLF3S-4000B - Version 1.2 – D1 – November 2022
 
 
 ### Special characters
@@ -66,6 +73,19 @@ Feedback as always is welcome.
 
 _Do not apply this product to safety protection devices or emergency stop equipment,
 and any other applications that may cause personal injury due to the product's failure._
+
+
+### Compatibles
+
+The library is primary for the SLF3S-0600F and SLF3S-1300F but is expected to work
+with the following devices too.
+
+|  device     |  verified  |
+|:------------|:----------:|
+| SLF3C-1300F |     N      |
+| SLF3S-0600D |     N      |
+| SLF3S-1300D |     N      |
+| SLF3S-4000B |     N      |
 
 
 ### Hardware
@@ -81,12 +101,17 @@ from left to right, see datasheet page 6
 |   5   |  SCL     |  I2C clock      |  3.3 Volt
 |   6   |   -      |  not connected  | connect to GND
 
-The IRQn pin can also be used to change the I2C address of the sensor.
+The IRQn pin can be used to change the I2C address of the sensor.
 The library does not support this, however a document describing the
 procedure is available in the documents folder.
+If no interrupts are used leave the IRQ line not connected (as it is an output).
 
 
 ### Related
+
+Official Sensirion Library for SLF3X
+
+- https://github.com/Sensirion/arduino-i2c-slf3x
 
 Product page - data sheets and more.
 
@@ -179,9 +204,18 @@ Note: The API can be subject to change.
 
 - **SLF3S(uint8_t address = 0x08, TwoWire \*wire = &Wire)** set address and select I2C bus. See I2C section below about address.
 - **bool begin(uint16_t type = 600)** checks if device address is visible on the I2C bus.
-Sets the type to 600 or 1300, all others are mapped upon 600.
+Sets the type to 600, 1300 or 4000. All other values are mapped upon 600.
 - **bool isConnected()** Checks if device address can be found on I2C bus.
 - **uint8_t getAddress()** Returns the device address, default 0x08 (8).
+
+|  device     |  type  |
+|:------------|:------:|
+| SLF3S-0600F |   600  |
+| SLF3S-1300F |  1300  |
+| SLF3C-1300F |  1300  |
+| SLF3S-0600D |   600  |
+| SLF3S-1300D |  1300  |
+| SLF3S-4000B |  4000  |
 
 
 ### Request
@@ -205,49 +239,70 @@ This is the most used data
 - **int readFlowTempSignal()** reads flow, temperature and signal flags (9 bytes)
 from the device.
 - **float getFlow()** converts the last read flow to uL/min. The conversion factor
-depends on the device type 600 or 1300.
+depends on the device type 600, 1300 or 4000.
+The returned value can be negative (reverse flow direction).
 - **float getTemperature()** converts the last read temperature to degrees C.
 The user has to convert to Kelvin or Fahrenheit themselves.
-- **uint16_t getSignalFlags()** see table below.
-
+The temperature can be below zero.
 
 steps table, details see page 14.
 
-|  measurement  |  SLF3S-0600F  |  SLF3S-1300F  |
-|:--------------|--------------:|--------------:|
-|   flow step   |   0.1 μl/min  |     2 μl/min  |
-|   temp step   |      0.005°C  |      0.005°C  |
+|  device     |   flow step    |  temp step  |
+|:------------|:--------------:|:-----------:|
+| SLF3S-0600F |    0.1 μl/min  |    0.005°C  |
+| SLF3S-1300F |      2 μl/min  |    0.005°C  |
+| SLF3C-1300F |      2 μl/min  |    0.005°C  |
+| SLF3S-0600D |                |
+| SLF3S-1300D |                |
+| SLF3S-4000B |  31.25 μl/min  |
 
+
+To check for certain events that might affect the measurement,
+on can check the signal flags.
+Use **readFlowTempSignal()** to read the signal flags as they
+cannot be read independently.
+
+- **uint16_t getSignalFlags()** see table below.
 
 flags table, details see page 11.
 
 |  bit  |  meaning           |  notes  |
 |:-----:|:-------------------|:--------|
 |   0   |  Air-in flag       |
-|   1   |  High FLow flag    |
+|   1   |  High Flow flag    |
 |  2-4  |  unused            |
-|   5   |  smoothing active  |
+|   5   |  smoothing active  |  exponential averaging used.
 |  6-15 |  unused            |
 
 
-### Product ID and Serial
+### Product ID
 
-These functions are less often used, but can be useful for
-e.g. log files.
+This functions can be useful for e.g. log files.
 
 - **uint32_t readProductID()** returns the 32 bit product ID
+
+|  device     |  product ID  |
+|:------------|:------------:|
+| SLF3S-0600F |  0x07030302  |
+| SLF3S-1300F |  0x07030402  |
+| SLF3C-1300F |  0x07030202  |
+| SLF3S-0600D |  0x07030901  |
+| SLF3S-1300D |  0x07030801  |
+| SLF3S-4000B |  0x07030501  |
+
+See example SLF3S_product_serial.ino.
+
+
+### Serial number
+
+This functions can be useful for e.g. log files.
+
 - **uint64_t readSerialNR()** returns 64 bit unique serial number.
-
-|  Feature           | SLF3S-0600F | SLF3S-1300F | SLF3C-1300F |
-|:-------------------|:-----------:|:-----------:|:-----------:|
-|  Read product ID   |  0x07030302 |  0x07030402 |  0x07030202 |
-
-Note the product ID's only differ one byte.
 
 Note: the return value of **readSerialNR()** is an uint64_t.
 The Arduino framework cannot print this by default, so one need
 either to split in two 32 bit integers or use e.g. **hex()** from
-the printHelpers library. See example.
+the printHelpers library. See example SLF3S_product_serial.ino.
 
 
 ### Error handling
@@ -267,6 +322,27 @@ Error table
 |  other   |  e.g. low level I2C  |  see Wire documentation.
 
 
+### Calibrating
+
+**Use with care, read datasheets**.
+
+These functions allow to override the conversion scales defined by the datasheets.
+They can also be used to calibrate for other liquids.
+
+- **void setFlowScale(float fs)**
+- **float getFlowScale()**
+- **void setTempScale(float ts)**
+- **float getTempScale()**
+
+
+### Debug
+
+Retrieve last raw measurements for debugging.
+
+- **int16_t getRawFlow()**
+- **int16_t getRawTemp()**
+
+
 ## Future
 
 #### Must
@@ -280,9 +356,6 @@ Error table
 #### Should
 
 - improve error handling
-- how about other liquids? possible?
-  - add **setFlowScale(float ratio)** a flow conversion constant
-  - calibrate other liquids than water / IPA. use at own risk
 - implement SLF3C library.
   - derived / stand alone / add to this library?
 - check if stopMeasurement() saves energy?

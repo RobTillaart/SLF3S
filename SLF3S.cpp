@@ -1,7 +1,7 @@
 //
 //    FILE: SLF3S.cpp
 //  AUTHOR: Rob Tillaart
-// VERSION: 0.1.0
+// VERSION: 0.1.1
 //    DATE: 2026-11-02
 // PURPOSE: Arduino library for the Sensirion I2C Low Flow sensor SLF3S
 //     URL: https://github.com/RobTillaart/SLF3S
@@ -36,14 +36,10 @@ bool SLF3S::begin(uint16_t type)
   //  reset variables
   _error = SLF3S_OK;
   _lastRead = 0;
-  if (type == 1300)
-  {
-    _flowScale = 1.0f / 500.0f;
-  }
-  else  //  type == 600 default.
-  {
-    _flowScale = 1.0f / 10.0f;
-  }
+  //  600 == default
+  _flowScale = 1.0f / 10.0f;
+  if (type == 1300) _flowScale = 1.0f / 500.0f;
+  if (type == 4000) _flowScale = 1.0f / 32.0f;
 
   if (! isConnected())
   {
